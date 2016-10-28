@@ -1,0 +1,10 @@
+version: '2'
+
+services:
+  linkclicker:
+    image: username/linkclicker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"

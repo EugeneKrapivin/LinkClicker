@@ -2,8 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LinkClicker.Interfaces;
+using LinkClicker.Logic;
+using LinkClicker.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -34,23 +40,29 @@ namespace LinkClicker
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddLogging();
+            services.AddTransient<ILinkLogic, LinkLogic>();
+            services.AddDbContext<LinkClickerContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=docker.local;Port=5432"));
 
+        // Add framework services.
             services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, LinkClickerContext ctx)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            loggerFactory.AddConsole(Configuration.GetSection("Logging"))
+                .AddDebug();
 
-            app.UseApplicationInsightsRequestTelemetry();
+            if (env.IsDevelopment())
+            {
 
-            app.UseApplicationInsightsExceptionTelemetry();
+                app.UseDeveloperExceptionPage();
+            }
 
             app.UseMvc();
+            ctx.Database.EnsureCreated();
         }
     }
 }

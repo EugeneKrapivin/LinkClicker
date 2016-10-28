@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using LinkClicker.Interfaces;
 using LinkClicker.Models;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling Web API for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+using Microsoft.Extensions.Logging;
 
 namespace LinkClicker.Controllers
 {
@@ -14,11 +13,13 @@ namespace LinkClicker.Controllers
     public class TinyLinkController : Controller
     {
         private readonly ILinkLogic _linkLogic;
+        private readonly ILogger<TinyLinkController> _logger;
 
-        public TinyLinkController(ILinkLogic linkLogic)
+        public TinyLinkController(ILinkLogic linkLogic, ILogger<TinyLinkController> logger = null)
         {
             if (linkLogic == null) throw new ArgumentNullException(nameof(linkLogic));
             _linkLogic = linkLogic;
+            _logger = logger;
         }
         [HttpGet]
         public async Task<IEnumerable<TinyLink>> GetAsync(int pageSize = 10, int page = 0)
@@ -29,24 +30,19 @@ namespace LinkClicker.Controllers
         [HttpGet("{id}")]
         public async Task<TinyLink> GetTinyLinkAsync(int id)
         {
-            return null;
+            return await _linkLogic.GetLinkAsync(id);
         }
 
         [HttpPost]
-        public async Task<TinyLink> PostAsync([FromBody]TinyLink value)
+        public async Task<TinyLink> CreateTinyLinkAsync([FromBody] TinyLink link)
         {
-            return null;
+            return await _linkLogic.CreateLinkAsync(link);
         }
 
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]TinyLink value)
-        {
-        }
-
-        // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task DeleteAsync(int id)
         {
+            await _linkLogic.ExpireLinkAsync(id);
         }
     }
 }
