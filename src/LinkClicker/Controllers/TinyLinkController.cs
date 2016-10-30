@@ -24,7 +24,7 @@ namespace LinkClicker.Controllers
         [HttpGet]
         public async Task<IEnumerable<TinyLink>> GetAsync(int pageSize = 10, int page = 0)
         {
-            return await _linkLogic.GetAllLinksAsync(10, 0);
+            return await _linkLogic.GetAllLinksAsync(pageSize, page);
         }
 
         [HttpGet("{id}")]

@@ -2,13 +2,26 @@ version: '2'
 
 services:
   linkclicker:
-    image: username/linkclicker:Debug
+    image: nocgod/linkclicker:Debug
     build:
       context: .
       dockerfile: Dockerfile.debug
     environment:
-      - REMOTE_DEBUGGING=${REMOTE_DEBUGGING}
+      REMOTE_DEBUGGING: ${REMOTE_DEBUGGING}
     ports:
       - "80:80"
     volumes:
       - .:/app
+    depends_on:
+      - postgres
+    links:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nocgod
+      POSTGRES_PASSWORD: nocgod

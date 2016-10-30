@@ -2,9 +2,22 @@ version: '2'
 
 services:
   linkclicker:
-    image: username/linkclicker
+    image: nocgod/linkclicker
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "80:80"
+    depends_on:
+      - postgres
+    links:
+      - postgres
+  
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: nocgod
+      POSTGRES_PASSWORD: nocgod

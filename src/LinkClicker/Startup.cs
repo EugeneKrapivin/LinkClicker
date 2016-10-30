@@ -43,7 +43,7 @@ namespace LinkClicker
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddLogging();
             services.AddTransient<ILinkLogic, LinkLogic>();
-            services.AddDbContext<LinkClickerContext>(options => options.UseNpgsql("User ID=postgres;Password=postgres;Host=docker.local;Port=5432"));
+            services.AddDbContext<LinkClickerContext>(options => options.UseNpgsql("User ID=nocgod;Password=nocgod;Host=postgres;Port=5432;Database=LinkClicker"));
 
         // Add framework services.
             services.AddMvc();
